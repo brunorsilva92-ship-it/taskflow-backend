@@ -19,25 +19,12 @@ const usuariosController = {
   // POST /usuarios — criar novo usuário
   async criar(req, res) {
     const { nome, email, senha } = req.body;
-
-    const existente = await usuarioModel.buscarPorEmail(email);
-    if (existente)
-      throw criarErro(400, 'E-mail já cadastrado');
-
     res.status(201).json(await usuarioModel.adicionar({ nome, email, senha }));
   },
 
   // PUT /usuarios/:id — atualizar usuário
   async atualizar(req, res) {
-    const id = parseInt(req.params.id);
-
-    if (req.body.email) {
-      const existente = await usuarioModel.buscarPorEmail(req.body.email);
-      if (existente && existente.id !== id)
-        throw criarErro(400, 'E-mail já está em uso por outro usuário');
-    }
-
-    const atualizado = await usuarioModel.atualizar(id, req.body);
+    const atualizado = await usuarioModel.atualizar(parseInt(req.params.id), req.body);
     if (!atualizado)
       throw criarErro(404, 'Usuário não encontrado');
     res.json(atualizado);
@@ -53,7 +40,7 @@ const usuariosController = {
 
     const totalTarefas = await usuarioModel.contarTarefas(id);
     if (totalTarefas > 0)
-      throw criarErro(400, 'Usuário possui tarefas vinculadas. Remova as tarefas antes de deletar o usuário.');
+      throw criarErro(409, 'Usuário possui tarefas vinculadas. Remova as tarefas antes de deletar o usuário.');
 
     const removido = await usuarioModel.remover(id);
     res.json({ mensagem: 'Usuário removido', usuario: removido });

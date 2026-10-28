@@ -1,6 +1,5 @@
 const criarErro = require('../utils/criarErro');
 const projetoModel = require('../models/projetos.model');
-const usuarioModel = require('../models/usuarios.model');
 
 const projetosController = {
 
@@ -27,10 +26,6 @@ const projetosController = {
 
     if (!idUsuario)
       throw criarErro(400, 'O campo usuarioId é obrigatório para vincular o projeto a um usuário');
-
-    const usuario = await usuarioModel.buscar(Number(idUsuario));
-    if (!usuario)
-      throw criarErro(400, 'O usuário informado não existe.');
 
     const novoProjeto = await projetoModel.adicionar({
       nome,
@@ -61,7 +56,7 @@ const projetosController = {
 
     const totalTarefas = await projetoModel.contarTarefas(id);
     if (totalTarefas > 0)
-      throw criarErro(400, 'O projeto possui tarefas associadas. Remova as tarefas antes de excluí-lo.');
+      throw criarErro(409, 'O projeto possui tarefas associadas. Remova as tarefas antes de excluí-lo.');
 
     const removido = await projetoModel.remover(id);
     res.json({ mensagem: 'Projeto removido', projeto: removido });

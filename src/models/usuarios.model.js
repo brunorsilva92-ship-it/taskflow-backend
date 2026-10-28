@@ -1,15 +1,13 @@
 const prisma = require('../database/prisma');
 
-const semSenha = {
-    id: true,
-    nome: true,
-    email: true,
-};
-
 const usuarioModel = {
     listar: async () => {
         return prisma.usuarios.findMany({
-            select: semSenha,
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+            },
             orderBy: { id: 'asc' },
         });
     },
@@ -17,7 +15,11 @@ const usuarioModel = {
     buscar: async (id) => {
         return prisma.usuarios.findUnique({
             where: { id: Number(id) },
-            select: semSenha,
+            select: {
+                id: true,
+                nome: true,
+                email: true,
+            },
         });
     },
 
@@ -30,7 +32,11 @@ const usuarioModel = {
     adicionar: async ({ nome, email, senha }) => {
         return prisma.usuarios.create({
             data: { nome, email, senha_hash: senha },
-            select: semSenha,
+            select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
         });
     },
 
@@ -45,7 +51,11 @@ const usuarioModel = {
                     ...(email !== undefined && { email }),
                     ...(senha !== undefined && { senha_hash: senha }),
                 },
-                select: semSenha,
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
             });
         } catch (erro) {
             if (erro.code === 'P2025') {
@@ -59,7 +69,11 @@ const usuarioModel = {
         try {
             return await prisma.usuarios.delete({
                 where: { id: Number(id) },
-                select: semSenha,
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
             });
         } catch (erro) {
             if (erro.code === 'P2025') {
