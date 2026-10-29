@@ -18,6 +18,9 @@ const autenticar = require('./src/middlewares/autenticar');
 const tratarErros = require('./src/middlewares/erro');
 const criarErro = require('./src/utils/criarErro');
 
+const swaggerUi = require('swagger-ui-express');
+const openapi = require('./src/docs/openapi');
+
 const app = express();
 const PORTA = process.env.PORT || 3000;
 
@@ -44,6 +47,8 @@ app.use('/tarefas', autenticar, tarefasRoutes);
 app.use('/usuarios', autenticar, usuariosRoutes);
 app.use('/projetos', autenticar, projetosRoutes);
 app.use('/prioridades', autenticar, prioridadesRoutes);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.use((req, res) => {
     const rota = `${req.method} ${req.originalUrl}`;
