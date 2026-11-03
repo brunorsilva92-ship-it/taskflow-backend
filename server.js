@@ -20,6 +20,7 @@ const criarErro = require('./src/utils/criarErro');
 
 const swaggerUi = require('swagger-ui-express');
 const openapi = require('./src/docs/openapi');
+const CDN = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14';
 
 const app = express();
 const PORTA = process.env.PORT || 3000;
@@ -48,7 +49,13 @@ app.use('/usuarios', autenticar, usuariosRoutes);
 app.use('/projetos', autenticar, projetosRoutes);
 app.use('/prioridades', autenticar, prioridadesRoutes);
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi, {
+    customCssUrl: `${CDN}/swagger-ui.css`,
+    customJs: [
+        `${CDN}/swagger-ui-bundle.js`,
+        `${CDN}/swagger-ui-standalone-preset.js`,
+    ],
+}));
 
 app.use((req, res) => {
     const rota = `${req.method} ${req.originalUrl}`;

@@ -1,13 +1,13 @@
+const json = (nome) => ({
+  'application/json': { schema: { $ref: `#/components/schemas/${nome}` } },
+});
+
 const schemas = {
   Erro: { type: 'object', properties: { erro: { type: 'object', properties: {
     mensagem: { type: 'string', example: 'Tarefa não encontrada' },
     detalhes: { type: 'array', items: { type: 'string' } },
   } } } },
 };
-
-const json = (nome) => ({
-  'application/json': { schema: { $ref: `#/components/schemas/${nome}` } },
-});
 
 const parametroId = {
   name: 'id',

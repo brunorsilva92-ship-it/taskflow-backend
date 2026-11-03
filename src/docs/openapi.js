@@ -10,7 +10,7 @@ module.exports = {
     description: 'API do TaskFlow · SENAI CTGAS-ER',
   },
 
-  servers: [{ url: 'http://localhost:3000', description: 'Local' }],
+  servers: [{ url: '/', description: 'Servidor atual' }],
 
   security: [{ bearerAuth: [] }],
 

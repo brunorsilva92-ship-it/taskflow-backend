@@ -5,6 +5,22 @@ const paths = {
     get: {
       tags: ['Tarefas'],
       summary: 'Lista todas as tarefas',
+      parameters: [
+        {
+          name: 'coluna',
+          in: 'query',
+          required: false,
+          description: 'Filtra pela coluna do quadro',
+          schema: { type: 'string', enum: ['afazer', 'andamento', 'concluido'] },
+        },
+        {
+          name: 'usuarioId',
+          in: 'query',
+          required: false,
+          description: 'Filtra as tarefas de um usuário',
+          schema: { type: 'integer', example: 1 },
+        },
+      ],
       responses: {
         '200': {
           description: 'Lista de tarefas',
