@@ -1,5 +1,7 @@
 const comum = require('./comum');
 const tarefas = require('./tarefas.docs');
+const usuarios = require('./usuarios.docs');
+const projetos = require('./projetos.docs');
 
 module.exports = {
   openapi: '3.0.3',
@@ -14,7 +16,7 @@ module.exports = {
 
   security: [{ bearerAuth: [] }],
 
-  paths: { ...tarefas.paths },
+  paths: { ...tarefas.paths, ...usuarios.paths, ...projetos.paths },
 
   components: {
     securitySchemes: {
@@ -24,6 +26,11 @@ module.exports = {
         bearerFormat: 'JWT',
       },
     },
-    schemas: { ...comum.schemas, ...tarefas.schemas },
+    schemas: {
+      ...comum.schemas,
+      ...tarefas.schemas,
+      ...usuarios.schemas,
+      ...projetos.schemas,
+    },
   },
 };
