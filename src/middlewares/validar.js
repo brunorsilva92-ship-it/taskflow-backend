@@ -18,6 +18,7 @@ function validar(schema, origem = 'body') {
 
             if (ausente) continue;
 
+
             if (regras.tipo === 'inteiro') {
                 const numero = Number(valor);
                 if (isNaN(numero) || !Number.isInteger(numero)) {
@@ -25,6 +26,10 @@ function validar(schema, origem = 'body') {
                 }
             } else if (regras.tipo && typeof valor !== regras.tipo) {
                 erros.push(`O campo '${campo}' deve ser do tipo ${regras.tipo}.`);
+            }
+
+            if (regras.enum && !regras.enum.includes(valor)) {
+                erros.push(`O campo '${campo}' deve ser um de: ${regras.enum.join(', ')}.`);
             }
 
             if (regras.maxLength && valor.length > regras.maxLength) {

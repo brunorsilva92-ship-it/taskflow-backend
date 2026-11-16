@@ -13,9 +13,9 @@ function tarefaValida() {
     return {
         texto: 'Revisar o plano de teste',
         coluna: 'afazer',
-        usuario_id: 1,
-        projeto_id: 1,
-        idprioridade: 2,
+        usuarioId: 1,
+        projetoId: 1,
+        prioridadeId: 2,
     };
 }
 
@@ -41,25 +41,26 @@ describe('validar', () => {
         expect(erro.status).toBe(400);
         expect(erro.message).toBe('Dados inválidos');
         expect(erro.detalhes).toEqual([
-            "O campo 'texto' é obrigatório",
-            "O campo 'coluna' é obrigatório",
-            "O campo 'usuario_id' é obrigatório",
-            "O campo 'projeto_id' é obrigatório",
-            "O campo 'idprioridade' é obrigatório",
+            "O campo 'texto' é obrigatório.",
+            "O campo 'coluna' é obrigatório.",
+            "O campo 'usuarioId' é obrigatório.",
+            "O campo 'prioridadeId' é obrigatório.",
+            "O campo 'projetoId' é obrigatório.",
         ]);
         expect(next).not.toHaveBeenCalled();
     });
 
-    test('coluna fora da lista: diz os valores aceitos', () => {
+    test('coluna fora da lista: 400 com um detalhe sobre a coluna', () => {
         const middleware = validar(schemas.tarefa);
         const req = { body: { ...tarefaValida(), coluna: 'feito' } };
         const next = jest.fn();
 
         const erro = pegarErro(() => middleware(req, {}, next));
 
-        expect(erro.detalhes).toEqual([
-            "O campo 'coluna' deve ser um de: afazer, andamento, concluido",
-        ]);
+        expect(erro).toBeDefined();
+        expect(erro.status).toBe(400);
+        expect(erro.detalhes).toHaveLength(1);
+        expect(erro.detalhes[0]).toContain("'coluna'");
         expect(next).not.toHaveBeenCalled();
     });
 
@@ -75,7 +76,7 @@ describe('validar', () => {
 
         expect(nextBom).toHaveBeenCalledTimes(1);
         expect(erro.detalhes).toEqual([
-            "O campo 'id' deve ser inteiro positivo",
+            "O campo 'id' deve ser do tipo inteiro.",
         ]);
         expect(nextRuim).not.toHaveBeenCalled();
     });

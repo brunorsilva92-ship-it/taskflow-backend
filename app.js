@@ -1,6 +1,58 @@
-const tarefasUtils = require('./utils/tarefas');
+require('dotenv').config();
 
-const { listarTodas, adicionar } = require('./utils/tarefas');
+const express = require('express');
+const cors = require('cors');
 
-adicionar({ id: 1, texto: 'Estudar Node', coluna: 'afazer' });
-console.log(listarTodas());
+const logger = require('./src/middlewares/logger');
+const validarContentType = require('./src/middlewares/validarContentType');
+
+const tarefasRoutes = require('./src/routes/tarefas.routes');
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+const projetosRoutes = require('./src/routes/projetos.routes');
+const prioridadesRoutes = require('./src/routes/prioridades.routes');
+const authRoutes = require('./src/routes/auth.routes');
+
+const autenticar = require('./src/middlewares/autenticar');
+const tratarErros = require('./src/middlewares/erro');
+const criarErro = require('./src/utils/criarErro');
+
+const swaggerUi = require('swagger-ui-express');
+const openapi = require('./src/docs/openapi');
+const CDN = 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.17.14';
+
+const app = express();
+
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 86400
+}));
+
+app.use(express.json());
+app.use(validarContentType);
+app.use(logger);
+
+app.use('/auth', authRoutes);
+
+app.use('/tarefas', autenticar, tarefasRoutes);
+app.use('/usuarios', autenticar, usuariosRoutes);
+app.use('/projetos', autenticar, projetosRoutes);
+app.use('/prioridades', autenticar, prioridadesRoutes);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi, {
+    customCssUrl: `${CDN}/swagger-ui.css`,
+    customJs: [
+        `${CDN}/swagger-ui-bundle.js`,
+        `${CDN}/swagger-ui-standalone-preset.js`,
+    ],
+}));
+
+app.use((req, res) => {
+    const rota = `${req.method} ${req.originalUrl}`;
+    throw criarErro(404, `Rota ${rota} não encontrada`);
+});
+
+app.use(tratarErros);
+
+module.exports = app;
