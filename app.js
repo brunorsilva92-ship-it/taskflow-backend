@@ -33,6 +33,10 @@ app.use(express.json());
 app.use(validarContentType);
 app.use(logger);
 
+app.get('/', (req, res) => {
+    res.json({ mensagem: 'TaskFlow API funcionando!' });
+});
+
 app.use('/auth', authRoutes);
 
 app.use('/tarefas', autenticar, tarefasRoutes);

@@ -1,6 +1,15 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const app = require('../../app');
+const prisma = require('../database/prisma');
+
+afterAll(async () => {
+    await prisma.$disconnect();
+});
+
+const USUARIO_ID = 1;
+const PROJETO_ID = 2;
+const PRIORIDADE_ID = 1;
 
 const token = jwt.sign({ id: 1, nome: 'Teste' }, process.env.JWT_SECRET);
 
@@ -21,7 +30,7 @@ describe('rotas da API', () => {
         const resposta = await request(app).get('/nao-existe');
 
         expect(resposta.status).toBe(404);
-        expect(resposta.body.erro.mensagem).toBe('Rota não encontrada');
+        expect(resposta.body.erro.mensagem).toBe('Rota GET /nao-existe não encontrada');
     });
 
     test('GET /tarefas sem token responde 401', async () => {
@@ -57,4 +66,44 @@ describe('rotas da API', () => {
 
         expect(resposta.status).toBe(415);
     });
+
+    test('POST /tarefas cria (201) e o DELETE remove', async () => {
+        const nova = {
+            texto: 'Tarefa criada pelo teste',
+            coluna: 'afazer',
+            usuarioId: USUARIO_ID,
+            projetoId: PROJETO_ID,
+            prioridadeId: PRIORIDADE_ID,
+        };
+ 
+        const criada = await request(app).post('/tarefas')
+        .set('Authorization', `Bearer ${token}`).send(nova);
+
+        expect(criada.status).toBe(201);
+        expect(criada.body).toHaveProperty('id');
+ 
+        const removida = await request(app).delete(`/tarefas/${criada.body.id}`)
+        .set('Authorization', `Bearer ${token}`);
+ 
+        expect(removida.status).toBe(200);
+      });
+
+    test('GET /tarefas/999999 responde 404', async () => {
+        const resposta = await request(app)
+       .get('/tarefas/999999')
+       .set('Authorization', `Bearer ${token}`);
+ 
+       expect(resposta.status).toBe(404);
+       expect(resposta.body.erro.mensagem).toBe('Tarefa não encontrada');
+    });
+  
+    test('GET /prioridades com token: 200 e uma lista', async () => {
+       const resposta = await request(app)
+           .get('/prioridades')
+           .set('Authorization', `Bearer ${token}`);
+ 
+        expect(resposta.status).toBe(200);
+        expect(Array.isArray(resposta.body)).toBe(true);
+    });
+
 });
