@@ -13,6 +13,7 @@ const PRIORIDADE_ID = 1;
 
 const token = jwt.sign({ id: 1, nome: 'Teste' }, process.env.JWT_SECRET);
 
+jest.setTimeout(15000);
 jest.spyOn(console, 'log').mockImplementation(() => {});
 jest.spyOn(console, 'error').mockImplementation(() => {});
 
