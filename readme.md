@@ -1,0 +1,1 @@
+![Testes](https://github.com/brunorsilva92-ship-it/taskflow-backend/actions/workflows/testes.yml/badge.svg)
